@@ -1,0 +1,495 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>IELTS 14天备考打卡表</title>
+<style>
+  :root{
+    --bg:#f6f7f9; --card:#ffffff; --text:#111317; --muted:#6b7280;
+    --line:#e5e7eb; --accent:#111317; --soft:#eef0f3; --ok:#e9f7ef;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--text)}
+  .wrap{max-width:1100px;margin:0 auto;padding:28px 20px 60px}
+  h1{font-size:30px;margin:0 0 8px}
+  h2{font-size:22px;margin:0 0 10px}
+  h3{font-size:18px;margin:0 0 8px}
+  p{line-height:1.65;margin:8px 0}
+  .sub{color:var(--muted);margin-bottom:22px}
+  .topbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:18px 0 24px}
+  button{border:1px solid var(--line);background:#fff;padding:10px 14px;border-radius:10px;cursor:pointer;font-size:14px}
+  button:hover{background:#f3f4f6}
+  button.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+  .spacer{flex:1}
+  .overall{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px 18px;margin-bottom:22px}
+  .progressrow{display:flex;gap:14px;align-items:center}
+  .bar{height:10px;background:var(--soft);border-radius:999px;overflow:hidden;flex:1}
+  .bar > span{display:block;height:100%;background:var(--accent);width:0%;transition:.2s}
+  .pct{font-variant-numeric:tabular-nums;font-weight:700}
+  .phase{display:none}
+  .phase.active{display:block}
+  .phaseHead{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px;margin-bottom:16px}
+  .pill{display:inline-block;padding:5px 9px;border-radius:999px;background:var(--soft);font-size:12px;margin-right:6px;color:#374151}
+  .toolbox{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:10px;margin-top:14px}
+  .tool{border:1px solid var(--line);border-radius:12px;padding:12px;background:#fafafa}
+  .days{display:grid;grid-template-columns:1fr;gap:14px}
+  .day{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px}
+  .dayTop{display:flex;gap:10px;align-items:flex-start}
+  .dayTitle{flex:1}
+  .time{color:var(--muted);font-size:13px}
+  .tasks{margin:12px 0 10px;padding:0;list-style:none}
+  .task{display:flex;gap:10px;padding:8px 0;border-bottom:1px dashed var(--line);align-items:flex-start}
+  .task:last-child{border-bottom:0}
+  .task input{margin-top:3px;transform:scale(1.15)}
+  .task label{line-height:1.45;cursor:pointer}
+  .task small{color:var(--muted)}
+  .miniProgress{display:flex;gap:10px;align-items:center;margin:10px 0 4px}
+  .miniProgress .bar{height:7px}
+  .fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:12px}
+  .field{display:flex;flex-direction:column;gap:5px}
+  .field.full{grid-column:1/-1}
+  label.flabel{font-size:12px;color:#4b5563;font-weight:600}
+  input[type=text],textarea{width:100%;border:1px solid var(--line);border-radius:10px;padding:10px 11px;font:inherit;background:#fcfcfd}
+  textarea{min-height:74px;resize:vertical}
+  .hint{font-size:12px;color:var(--muted);margin-top:8px}
+  .success{background:var(--ok)!important}
+  .phaseFooter{margin-top:18px;color:var(--muted);font-size:13px}
+  .warning{margin-top:12px;padding:12px 14px;border-radius:12px;background:#fff7ed;border:1px solid #fed7aa;line-height:1.6}
+  @media (max-width:720px){
+    .fields{grid-template-columns:1fr}
+    .field.full{grid-column:auto}
+    h1{font-size:26px}
+  }
+
+  @media print{
+    body{background:#fff}
+    .wrap{max-width:none;padding:0}
+    .topbar,.overall,.noPrint{display:none!important}
+    .phase{display:block!important;page-break-after:always}
+    .phase:last-of-type{page-break-after:auto}
+    .phaseHead,.day{break-inside:avoid;box-shadow:none}
+    .day{padding:13px;margin-bottom:10px}
+    textarea{min-height:46px}
+    .pill{border:1px solid #ddd;background:#fff}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>IELTS 14天备考打卡表</h1>
+  <p class="sub">每天最多 2 小时｜阅读为主轴｜词汇与语法只服务于真实阅读问题｜本地自动保存</p>
+
+  <div class="topbar noPrint">
+    <button class="tab active" data-target="p1">阶段1 · Day 1–5</button>
+    <button class="tab" data-target="p2">阶段2 · Day 6–9</button>
+    <button class="tab" data-target="p3">阶段3 · Day 10–14</button>
+    <div class="spacer"></div>
+    <button onclick="window.print()">打印 / 导出 PDF</button>
+    <button onclick="resetAll()">重置全部</button>
+  </div>
+
+  <div class="overall noPrint">
+    <strong>总进度</strong>
+    <div class="progressrow" style="margin-top:10px">
+      <div class="bar"><span id="overallBar"></span></div>
+      <div class="pct" id="overallPct">0%</div>
+    </div>
+  </div>
+
+  <section class="phase active" id="p1">
+    <div class="phaseHead">
+      <span class="pill">Day 1–5</span><span class="pill">重建阅读方式</span>
+      <h2>阶段 1：先把“读懂一篇文章”这件事做扎实</h2>
+      <p>每天固定做 <b>1 篇纯阅读 + 结构分析</b>。第一次阅读先不看题、不查词；读完后再判断文章核心观点、每段作用和论证关系。真正影响理解的词，再用 Cambridge Dictionary 查 definition，复制到你自己的单词网站。</p>
+      <div class="warning"><b>当天生词任务：</b>把当天阅读中划出并筛选后的重点生词真正掌握。建议控制在 <b>10–15 分钟</b>，优先记会影响理解、反复出现或值得长期使用的词。</div>
+      <div class="toolbox">
+        <div class="tool"><b>Cambridge IELTS 17–18</b><br><small>主力精读材料，允许拆文章、做结构分析。</small></div>
+        <div class="tool"><b>Cambridge Dictionary</b><br><small>只查真正影响理解的词，definition 直接存入你的词库。</small></div>
+        <div class="tool"><b>自己的单词网站</b><br><small>记录阅读生词 + 复习；再复习并掌握当天阅读中筛出的重点生词。</small></div>
+        <div class="tool"><b>British Council / Perfect English Grammar</b><br><small>只有当阅读暴露具体语法问题时才用，避免从头学语法。</small></div>
+      </div>
+    </div>
+
+    <div class="days">
+      <!-- Day 1 -->
+      <div class="day" data-day="1">
+        <div class="dayTop"><div class="dayTitle"><h3>Day 1 · 建立阅读流程</h3><div class="time">建议总时长：110–120 分钟</div></div></div>
+        <ul class="tasks">
+          <li class="task"><input type="checkbox" id="d1t1"><label for="d1t1"><b>30 min</b> Cambridge 17：选 1 篇 Passage，<b>不看题、不查词</b>纯阅读。<br><small>目标：读完能用 2–3 句话说清文章在讲什么。</small></label></li>
+          <li class="task"><input type="checkbox" id="d1t2"><label for="d1t2"><b>20 min</b> 画/写文章结构：核心观点 + 每段作用 + 段落关系。</label></li>
+          <li class="task"><input type="checkbox" id="d1t3"><label for="d1t3"><b>15 min</b> 回查影响理解的词；Cambridge Dictionary 查 definition → 存入自己的词库。</label></li>
+          <li class="task"><input type="checkbox" id="d1t4"><label for="d1t4"><b>10 min</b> 掌握当天划出并筛选后的重点生词；优先理解词义、常见搭配和文章中的用法。</label></li>
+          <li class="task"><input type="checkbox" id="d1t5"><label for="d1t5"><b>25 min</b> 做刚才 Passage 对应题目。</label></li>
+          <li class="task"><input type="checkbox" id="d1t6"><label for="d1t6"><b>15 min</b> 错题复盘：标记是词汇 / 句子 / 定位 / 逻辑 / 注意力 / 题型问题。</label></li>
+        </ul>
+        <div class="miniProgress"><div class="bar"><span></span></div><span class="pct">0%</span></div>
+        <div class="fields">
+          <div class="field"><label class="flabel">Today's Passage</label><input type="text" data-key="d1_passage"></div>
+          <div class="field"><label class="flabel">主要错误原因</label><input type="text" data-key="d1_error"></div>
+          <div class="field"><label class="flabel">语法问题</label><input type="text" data-key="d1_grammar"></div>
+          <div class="field"><label class="flabel">新词 / 搭配</label><input type="text" data-key="d1_words"></div>
+          <div class="field full"><label class="flabel">Notes</label><textarea data-key="d1_notes"></textarea></div>
+        </div>
+      </div>
+
+      <div class="day" data-day="2">
+        <div class="dayTop"><div class="dayTitle"><h3>Day 2 · 关注“每段为什么存在”</h3><div class="time">110–120 分钟</div></div></div>
+        <ul class="tasks">
+          <li class="task"><input type="checkbox" id="d2t1"><label for="d2t1"><b>30 min</b> Cambridge 17：1 篇纯阅读，不看题、不查词。</label></li>
+          <li class="task"><input type="checkbox" id="d2t2"><label for="d2t2"><b>20 min</b> 给每段贴功能标签：背景 / 观点 / 证据 / 例子 / 转折 / 反驳 / 结论。</label></li>
+          <li class="task"><input type="checkbox" id="d2t3"><label for="d2t3"><b>15 min</b> 查并记录真正影响理解的词；优先记常见搭配。</label></li>
+          <li class="task"><input type="checkbox" id="d2t4"><label for="d2t4"><b>10 min</b> 掌握当天划出并筛选后的重点生词。</label></li>
+          <li class="task"><input type="checkbox" id="d2t5"><label for="d2t5"><b>25 min</b> 做对应阅读题。</label></li>
+          <li class="task"><input type="checkbox" id="d2t6"><label for="d2t6"><b>15 min</b> 复盘错题；如果出现“单词都认识但句子看不懂”，记下句子结构。</label></li>
+        </ul>
+        <div class="miniProgress"><div class="bar"><span></span></div><span class="pct">0%</span></div>
+        <div class="fields">
+          <div class="field"><label class="flabel">Today's Passage</label><input type="text" data-key="d2_passage"></div>
+          <div class="field"><label class="flabel">主要错误原因</label><input type="text" data-key="d2_error"></div>
+          <div class="field"><label class="flabel">语法问题</label><input type="text" data-key="d2_grammar"></div>
+          <div class="field"><label class="flabel">新词 / 搭配</label><input type="text" data-key="d2_words"></div>
+          <div class="field full"><label class="flabel">Notes</label><textarea data-key="d2_notes"></textarea></div>
+        </div>
+      </div>
+
+      <div class="day" data-day="3">
+        <div class="dayTop"><div class="dayTitle"><h3>Day 3 · 训练“缺词也继续读”</h3><div class="time">110–120 分钟</div></div></div>
+        <ul class="tasks">
+          <li class="task"><input type="checkbox" id="d3t1"><label for="d3t1"><b>30 min</b> Cambridge 17–18：1 篇纯阅读；陌生词先根据上下文猜。</label></li>
+          <li class="task"><input type="checkbox" id="d3t2"><label for="d3t2"><b>20 min</b> 结构分析，并写出 3 个“我虽然不认识词，但仍能推断”的例子。</label></li>
+          <li class="task"><input type="checkbox" id="d3t3"><label for="d3t3"><b>15 min</b> Cambridge Dictionary 查关键生词 → 自己的词库。</label></li>
+          <li class="task"><input type="checkbox" id="d3t4"><label for="d3t4"><b>10 min</b> 掌握当天划出并筛选后的重点生词。</label></li>
+          <li class="task"><input type="checkbox" id="d3t5"><label for="d3t5"><b>25 min</b> 做对应题目。</label></li>
+          <li class="task"><input type="checkbox" id="d3t6"><label for="d3t6"><b>15 min</b> 错题复盘 + 只针对一个最明显语法洞做 5–10 分钟补充练习（需要时）。</label></li>
+        </ul>
+        <div class="miniProgress"><div class="bar"><span></span></div><span class="pct">0%</span></div>
+        <div class="fields">
+          <div class="field"><label class="flabel">Today's Passage</label><input type="text" data-key="d3_passage"></div>
+          <div class="field"><label class="flabel">主要错误原因</label><input type="text" data-key="d3_error"></div>
+          <div class="field"><label class="flabel">语法问题</label><input type="text" data-key="d3_grammar"></div>
+          <div class="field"><label class="flabel">新词 / 搭配</label><input type="text" data-key="d3_words"></div>
+          <div class="field full"><label class="flabel">Notes</label><textarea data-key="d3_notes"></textarea></div>
+        </div>
+      </div>
+
+      <div class="day" data-day="4">
+        <div class="dayTop"><div class="dayTitle"><h3>Day 4 · 识别论证关系</h3><div class="time">110–120 分钟</div></div></div>
+        <ul class="tasks">
+          <li class="task"><input type="checkbox" id="d4t1"><label for="d4t1"><b>30 min</b> Cambridge 18：1 篇纯阅读。</label></li>
+          <li class="task"><input type="checkbox" id="d4t2"><label for="d4t2"><b>20 min</b> 标出文章中的因果、对比、让步、例证、结论关系。</label></li>
+          <li class="task"><input type="checkbox" id="d4t3"><label for="d4t3"><b>15 min</b> 查词并记录；只保留真正值得记的词/搭配。</label></li>
+          <li class="task"><input type="checkbox" id="d4t4"><label for="d4t4"><b>10 min</b> 掌握当天划出并筛选后的重点生词。</label></li>
+          <li class="task"><input type="checkbox" id="d4t5"><label for="d4t5"><b>25 min</b> 做对应题目。</label></li>
+          <li class="task"><input type="checkbox" id="d4t6"><label for="d4t6"><b>15 min</b> 错题复盘，尤其观察错误是否来自“段落关系理解错”。</label></li>
+        </ul>
+        <div class="miniProgress"><div class="bar"><span></span></div><span class="pct">0%</span></div>
+        <div class="fields">
+          <div class="field"><label class="flabel">Today's Passage</label><input type="text" data-key="d4_passage"></div>
+          <div class="field"><label class="flabel">主要错误原因</label><input type="text" data-key="d4_error"></div>
+          <div class="field"><label class="flabel">语法问题</label><input type="text" data-key="d4_grammar"></div>
+          <div class="field"><label class="flabel">新词 / 搭配</label><input type="text" data-key="d4_words"></div>
+          <div class="field full"><label class="flabel">Notes</label><textarea data-key="d4_notes"></textarea></div>
+        </div>
+      </div>
+
+      <div class="day" data-day="5">
+        <div class="dayTop"><div class="dayTitle"><h3>Day 5 · 第一阶段总结</h3><div class="time">110–120 分钟</div></div></div>
+        <ul class="tasks">
+          <li class="task"><input type="checkbox" id="d5t1"><label for="d5t1"><b>30 min</b> Cambridge 18：1 篇纯阅读。</label></li>
+          <li class="task"><input type="checkbox" id="d5t2"><label for="d5t2"><b>20 min</b> 独立写出整篇文章“骨架”，尽量不回看原文。</label></li>
+          <li class="task"><input type="checkbox" id="d5t3"><label for="d5t3"><b>15 min</b> 查词 → 词库；快速回顾前 4 天高频重复词。</label></li>
+          <li class="task"><input type="checkbox" id="d5t4"><label for="d5t4"><b>10 min</b> 掌握当天划出并筛选后的重点生词。</label></li>
+          <li class="task"><input type="checkbox" id="d5t5"><label for="d5t5"><b>25 min</b> 做对应题目。</label></li>
+          <li class="task"><input type="checkbox" id="d5t6"><label for="d5t6"><b>15 min</b> 总结这 5 天前三大问题：例如长难句 / 定位 / 注意力 / 某题型。</label></li>
+        </ul>
+        <div class="miniProgress"><div class="bar"><span></span></div><span class="pct">0%</span></div>
+        <div class="fields">
+          <div class="field"><label class="flabel">Today's Passage</label><input type="text" data-key="d5_passage"></div>
+          <div class="field"><label class="flabel">前三大问题</label><input type="text" data-key="d5_error"></div>
+          <div class="field"><label class="flabel">语法问题</label><input type="text" data-key="d5_grammar"></div>
+          <div class="field"><label class="flabel">新词 / 搭配</label><input type="text" data-key="d5_words"></div>
+          <div class="field full"><label class="flabel">阶段总结</label><textarea data-key="d5_notes"></textarea></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="phase" id="p2">
+    <div class="phaseHead">
+      <span class="pill">Day 6–9</span><span class="pill">加入速度</span>
+      <h2>阶段 2：保持“读懂”，开始加入考试节奏</h2>
+      <p>仍然每天保留一篇纯阅读和结构分析，但时间略压缩。之后加入限时题目和 Listening。你现在开始观察：不是“会不会”，而是“在时间压力下哪里开始崩”。</p>
+      <div class="toolbox">
+        <div class="tool"><b>Cambridge 18</b><br><small>继续作为阅读训练材料。</small></div>
+        <div class="tool"><b>Cambridge Listening</b><br><small>做完后区分：没听到 / 不认识词 / 听懂但没抓答案 / 注意力断了。</small></div>
+        <div class="tool"><b>语法网站</b><br><small>只补当天暴露出来的具体问题，10 分钟内解决。</small></div>
+      </div>
+    </div>
+
+    <div class="days">
+      <div class="day" data-day="6">
+        <div class="dayTop"><div class="dayTitle"><h3>Day 6 · 阅读 + 限时题目</h3><div class="time">约 120 分钟</div></div></div>
+        <ul class="tasks">
+          <li class="task"><input type="checkbox" id="d6t1"><label for="d6t1"><b>25 min</b> 1 篇纯阅读，不看题；优先保持理解。</label></li>
+          <li class="task"><input type="checkbox" id="d6t2"><label for="d6t2"><b>15 min</b> 结构分析：核心观点 + 段落功能。</label></li>
+          <li class="task"><input type="checkbox" id="d6t3"><label for="d6t3"><b>10 min</b> 查关键生词并存入词库。</label></li>
+          <li class="task"><input type="checkbox" id="d6t4"><label for="d6t4"><b>10 min</b> 掌握当天划出并筛选后的重点生词。</label></li>
+          <li class="task"><input type="checkbox" id="d6t5"><label for="d6t5"><b>20 min</b> 限时做该 Passage 对应题目，记录耗时。</label></li>
+          <li class="task"><input type="checkbox" id="d6t6"><label for="d6t6"><b>30 min</b> Cambridge Listening：做 1 个 Section + 精细复盘。</label></li>
+          <li class="task"><input type="checkbox" id="d6t7"><label for="d6t7"><b>10 min</b> 记录今日最主要错误来源。</label></li>
+        </ul>
+        <div class="miniProgress"><div class="bar"><span></span></div><span class="pct">0%</span></div>
+        <div class="fields">
+          <div class="field"><label class="flabel">Today's Passage</label><input type="text" data-key="d6_passage"></div>
+          <div class="field"><label class="flabel">阅读做题耗时</label><input type="text" data-key="d6_error"></div>
+          <div class="field"><label class="flabel">Listening 错误类型</label><input type="text" data-key="d6_grammar"></div>
+          <div class="field"><label class="flabel">新词 / 搭配</label><input type="text" data-key="d6_words"></div>
+          <div class="field full"><label class="flabel">Notes</label><textarea data-key="d6_notes"></textarea></div>
+        </div>
+      </div>
+
+      <div class="day" data-day="7">
+        <div class="dayTop"><div class="dayTitle"><h3>Day 7 · 找“时间黑洞”</h3><div class="time">约 120 分钟</div></div></div>
+        <ul class="tasks">
+          <li class="task"><input type="checkbox" id="d7t1"><label for="d7t1"><b>25 min</b> 1 篇纯阅读。</label></li>
+          <li class="task"><input type="checkbox" id="d7t2"><label for="d7t2"><b>15 min</b> 结构分析，并标记最难读的 2 句话。</label></li>
+          <li class="task"><input type="checkbox" id="d7t3"><label for="d7t3"><b>10 min</b> 查词 → 词库。</label></li>
+          <li class="task"><input type="checkbox" id="d7t4"><label for="d7t4"><b>10 min</b> 掌握当天划出并筛选后的重点生词。</label></li>
+          <li class="task"><input type="checkbox" id="d7t5"><label for="d7t5"><b>20 min</b> 限时阅读题；标出最耗时间的题型。</label></li>
+          <li class="task"><input type="checkbox" id="d7t6"><label for="d7t6"><b>30 min</b> Listening 1 个 Section + 复盘。</label></li>
+          <li class="task"><input type="checkbox" id="d7t7"><label for="d7t7"><b>10 min</b> 必要时针对 1 个语法点做短练习。</label></li>
+        </ul>
+        <div class="miniProgress"><div class="bar"><span></span></div><span class="pct">0%</span></div>
+        <div class="fields">
+          <div class="field"><label class="flabel">Today's Passage</label><input type="text" data-key="d7_passage"></div>
+          <div class="field"><label class="flabel">最耗时题型</label><input type="text" data-key="d7_error"></div>
+          <div class="field"><label class="flabel">语法问题</label><input type="text" data-key="d7_grammar"></div>
+          <div class="field"><label class="flabel">新词 / 搭配</label><input type="text" data-key="d7_words"></div>
+          <div class="field full"><label class="flabel">Notes</label><textarea data-key="d7_notes"></textarea></div>
+        </div>
+      </div>
+
+      <div class="day" data-day="8">
+        <div class="dayTop"><div class="dayTitle"><h3>Day 8 · 阅读与听力共同复盘</h3><div class="time">约 120 分钟</div></div></div>
+        <ul class="tasks">
+          <li class="task"><input type="checkbox" id="d8t1"><label for="d8t1"><b>25 min</b> 1 篇纯阅读。</label></li>
+          <li class="task"><input type="checkbox" id="d8t2"><label for="d8t2"><b>15 min</b> 结构分析。</label></li>
+          <li class="task"><input type="checkbox" id="d8t3"><label for="d8t3"><b>10 min</b> 查词 → 词库。</label></li>
+          <li class="task"><input type="checkbox" id="d8t4"><label for="d8t4"><b>10 min</b> 掌握当天划出并筛选后的重点生词。</label></li>
+          <li class="task"><input type="checkbox" id="d8t5"><label for="d8t5"><b>20 min</b> 限时做题。</label></li>
+          <li class="task"><input type="checkbox" id="d8t6"><label for="d8t6"><b>30 min</b> Listening 1 个 Section + transcript 定位错因。</label></li>
+          <li class="task"><input type="checkbox" id="d8t7"><label for="d8t7"><b>10 min</b> 回看近 3 天错题分类，找重复问题。</label></li>
+        </ul>
+        <div class="miniProgress"><div class="bar"><span></span></div><span class="pct">0%</span></div>
+        <div class="fields">
+          <div class="field"><label class="flabel">Today's Passage</label><input type="text" data-key="d8_passage"></div>
+          <div class="field"><label class="flabel">重复错误</label><input type="text" data-key="d8_error"></div>
+          <div class="field"><label class="flabel">Listening 错因</label><input type="text" data-key="d8_grammar"></div>
+          <div class="field"><label class="flabel">新词 / 搭配</label><input type="text" data-key="d8_words"></div>
+          <div class="field full"><label class="flabel">Notes</label><textarea data-key="d8_notes"></textarea></div>
+        </div>
+      </div>
+
+      <div class="day" data-day="9">
+        <div class="dayTop"><div class="dayTitle"><h3>Day 9 · 第二阶段收口</h3><div class="time">约 120 分钟</div></div></div>
+        <ul class="tasks">
+          <li class="task"><input type="checkbox" id="d9t1"><label for="d9t1"><b>25 min</b> 1 篇纯阅读。</label></li>
+          <li class="task"><input type="checkbox" id="d9t2"><label for="d9t2"><b>15 min</b> 结构分析，尽量用英文短语概括每段。</label></li>
+          <li class="task"><input type="checkbox" id="d9t3"><label for="d9t3"><b>10 min</b> 查词 + 词库。</label></li>
+          <li class="task"><input type="checkbox" id="d9t4"><label for="d9t4"><b>10 min</b> 掌握当天划出并筛选后的重点生词。</label></li>
+          <li class="task"><input type="checkbox" id="d9t5"><label for="d9t5"><b>20 min</b> 限时做题。</label></li>
+          <li class="task"><input type="checkbox" id="d9t6"><label for="d9t6"><b>30 min</b> Listening 1 个 Section + 复盘。</label></li>
+          <li class="task"><input type="checkbox" id="d9t7"><label for="d9t7"><b>10 min</b> 写出进入模考阶段前的 3 个提醒。</label></li>
+        </ul>
+        <div class="miniProgress"><div class="bar"><span></span></div><span class="pct">0%</span></div>
+        <div class="fields">
+          <div class="field"><label class="flabel">Today's Passage</label><input type="text" data-key="d9_passage"></div>
+          <div class="field"><label class="flabel">模考前3个提醒</label><input type="text" data-key="d9_error"></div>
+          <div class="field"><label class="flabel">语法/听力问题</label><input type="text" data-key="d9_grammar"></div>
+          <div class="field"><label class="flabel">新词 / 搭配</label><input type="text" data-key="d9_words"></div>
+          <div class="field full"><label class="flabel">阶段总结</label><textarea data-key="d9_notes"></textarea></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="phase" id="p3">
+    <div class="phaseHead">
+      <span class="pill">Day 10–14</span><span class="pill">模考 + 收口</span>
+      <h2>阶段 3：用 Cambridge 19–20 检验，再把错误收回来</h2>
+      <p>Cambridge 19–20 尽量保留到这里当 unseen test。模考日不再额外塞完整精读，以免超过 2 小时；非模考日继续保留纯阅读。最后两天不追新知识，主要收口。</p>
+      <div class="warning"><b>原则：</b>模考的价值不在“做完”，而在于知道自己在真实时间下哪里失分。最后几天不要突然暴增单词量，也不要一天刷三套。</div>
+      <div class="toolbox">
+        <div class="tool"><b>Cambridge 19–20</b><br><small>后期模拟与检验，尽量保持未见题。</small></div>
+        <div class="tool"><b>IELTS Ready / IDP</b><br><small>可选：熟悉电脑端界面；有余力再用，不是主任务。</small></div>
+        <div class="tool"><b>Writing / Speaking</b><br><small>用小块时间维持：写提纲、口头回答，不追求每天整套。</small></div>
+      </div>
+    </div>
+
+    <div class="days">
+      <div class="day" data-day="10">
+        <div class="dayTop"><div class="dayTitle"><h3>Day 10 · Reading Full Test</h3><div class="time">约 120 分钟</div></div></div>
+        <ul class="tasks">
+          <li class="task"><input type="checkbox" id="d10t1"><label for="d10t1"><b>60 min</b> Cambridge 19：完整 Reading Test，严格计时。</label></li>
+          <li class="task"><input type="checkbox" id="d10t2"><label for="d10t2"><b>30 min</b> 复盘：错题 + 每个 Passage 时间分配。</label></li>
+          <li class="task"><input type="checkbox" id="d10t3"><label for="d10t3"><b>10 min</b> 只记录最值得保留的高频词 / 搭配。</label></li>
+          <li class="task"><input type="checkbox" id="d10t4"><label for="d10t4"><b>10 min</b> 掌握当天划出并筛选后的重点生词。</label></li>
+          <li class="task"><input type="checkbox" id="d10t5"><label for="d10t5"><b>10 min</b> 写下下一套阅读要改的 2 个策略。</label></li>
+        </ul>
+        <div class="miniProgress"><div class="bar"><span></span></div><span class="pct">0%</span></div>
+        <div class="fields">
+          <div class="field"><label class="flabel">Reading 分数 / 正确数</label><input type="text" data-key="d10_passage"></div>
+          <div class="field"><label class="flabel">P1 / P2 / P3 耗时</label><input type="text" data-key="d10_error"></div>
+          <div class="field"><label class="flabel">最大失分原因</label><input type="text" data-key="d10_grammar"></div>
+          <div class="field"><label class="flabel">新词 / 搭配</label><input type="text" data-key="d10_words"></div>
+          <div class="field full"><label class="flabel">下次要改的策略</label><textarea data-key="d10_notes"></textarea></div>
+        </div>
+      </div>
+
+      <div class="day" data-day="11">
+        <div class="dayTop"><div class="dayTitle"><h3>Day 11 · Listening Full Test + 轻阅读</h3><div class="time">约 115–120 分钟</div></div></div>
+        <ul class="tasks">
+          <li class="task"><input type="checkbox" id="d11t1"><label for="d11t1"><b>30–35 min</b> Cambridge 19：完整 Listening Test。</label></li>
+          <li class="task"><input type="checkbox" id="d11t2"><label for="d11t2"><b>30 min</b> Listening 复盘：按错因分类。</label></li>
+          <li class="task"><input type="checkbox" id="d11t3"><label for="d11t3"><b>20 min</b> 轻量纯阅读 1 篇 Passage（不做题）。</label></li>
+          <li class="task"><input type="checkbox" id="d11t4"><label for="d11t4"><b>10 min</b> 写出文章结构。</label></li>
+          <li class="task"><input type="checkbox" id="d11t5"><label for="d11t5"><b>10 min</b> 词库 + 掌握当天划出并筛选后的重点生词。</label></li>
+          <li class="task"><input type="checkbox" id="d11t6"><label for="d11t6"><b>10 min</b> Speaking Part 2：准备 1 分钟 + 说 2 分钟，可录音回听。</label></li>
+        </ul>
+        <div class="miniProgress"><div class="bar"><span></span></div><span class="pct">0%</span></div>
+        <div class="fields">
+          <div class="field"><label class="flabel">Listening 分数 / 正确数</label><input type="text" data-key="d11_passage"></div>
+          <div class="field"><label class="flabel">Listening 主要错因</label><input type="text" data-key="d11_error"></div>
+          <div class="field"><label class="flabel">今日阅读主题</label><input type="text" data-key="d11_grammar"></div>
+          <div class="field"><label class="flabel">新词 / 搭配</label><input type="text" data-key="d11_words"></div>
+          <div class="field full"><label class="flabel">Notes</label><textarea data-key="d11_notes"></textarea></div>
+        </div>
+      </div>
+
+      <div class="day" data-day="12">
+        <div class="dayTop"><div class="dayTitle"><h3>Day 12 · 第二次 Reading Full Test</h3><div class="time">约 120 分钟</div></div></div>
+        <ul class="tasks">
+          <li class="task"><input type="checkbox" id="d12t1"><label for="d12t1"><b>60 min</b> Cambridge 20：完整 Reading Test，严格计时。</label></li>
+          <li class="task"><input type="checkbox" id="d12t2"><label for="d12t2"><b>30 min</b> 对照 Day 10：分数、时间、错误类型有没有变化。</label></li>
+          <li class="task"><input type="checkbox" id="d12t3"><label for="d12t3"><b>10 min</b> 只存高价值词汇。</label></li>
+          <li class="task"><input type="checkbox" id="d12t4"><label for="d12t4"><b>10 min</b> 掌握当天划出并筛选后的重点生词。</label></li>
+          <li class="task"><input type="checkbox" id="d12t5"><label for="d12t5"><b>10 min</b> 写一个 Writing Task 2 提纲：立场 + 两个主体段观点 + 例子。</label></li>
+        </ul>
+        <div class="miniProgress"><div class="bar"><span></span></div><span class="pct">0%</span></div>
+        <div class="fields">
+          <div class="field"><label class="flabel">Reading 分数 / 正确数</label><input type="text" data-key="d12_passage"></div>
+          <div class="field"><label class="flabel">和 Day 10 相比</label><input type="text" data-key="d12_error"></div>
+          <div class="field"><label class="flabel">仍然重复的问题</label><input type="text" data-key="d12_grammar"></div>
+          <div class="field"><label class="flabel">新词 / 搭配</label><input type="text" data-key="d12_words"></div>
+          <div class="field full"><label class="flabel">Task 2 提纲 / Notes</label><textarea data-key="d12_notes"></textarea></div>
+        </div>
+      </div>
+
+      <div class="day" data-day="13">
+        <div class="dayTop"><div class="dayTitle"><h3>Day 13 · 最后一轮整合</h3><div class="time">约 110–120 分钟</div></div></div>
+        <ul class="tasks">
+          <li class="task"><input type="checkbox" id="d13t1"><label for="d13t1"><b>30 min</b> 1 篇纯阅读 + 结构分析（选你最容易出错的题材）。</label></li>
+          <li class="task"><input type="checkbox" id="d13t2"><label for="d13t2"><b>25 min</b> 回看过去两周最典型的阅读错题。</label></li>
+          <li class="task"><input type="checkbox" id="d13t3"><label for="d13t3"><b>20 min</b> Listening：做最薄弱的 1 个 Section。</label></li>
+          <li class="task"><input type="checkbox" id="d13t4"><label for="d13t4"><b>10 min</b> 高频词库复习，不再大规模加新词。</label></li>
+          <li class="task"><input type="checkbox" id="d13t5"><label for="d13t5"><b>10 min</b> 复习当天与前几天的重点生词（可选，累就跳过）。</label></li>
+          <li class="task"><input type="checkbox" id="d13t6"><label for="d13t6"><b>15 min</b> Speaking：Part 1 + Part 2 口头热身。</label></li>
+        </ul>
+        <div class="miniProgress"><div class="bar"><span></span></div><span class="pct">0%</span></div>
+        <div class="fields">
+          <div class="field"><label class="flabel">Today's Passage</label><input type="text" data-key="d13_passage"></div>
+          <div class="field"><label class="flabel">最典型错题</label><input type="text" data-key="d13_error"></div>
+          <div class="field"><label class="flabel">Listening 薄弱点</label><input type="text" data-key="d13_grammar"></div>
+          <div class="field"><label class="flabel">最后保留的高频词</label><input type="text" data-key="d13_words"></div>
+          <div class="field full"><label class="flabel">Notes</label><textarea data-key="d13_notes"></textarea></div>
+        </div>
+      </div>
+
+      <div class="day" data-day="14">
+        <div class="dayTop"><div class="dayTitle"><h3>Day 14 · 轻量收口</h3><div class="time">建议 60–90 分钟即可</div></div></div>
+        <ul class="tasks">
+          <li class="task"><input type="checkbox" id="d14t1"><label for="d14t1"><b>20 min</b> 轻松读 1 篇熟悉难度的 Passage，不追求刷题量。</label></li>
+          <li class="task"><input type="checkbox" id="d14t2"><label for="d14t2"><b>15 min</b> 看两周错题总结：只看“我最容易犯什么”。</label></li>
+          <li class="task"><input type="checkbox" id="d14t3"><label for="d14t3"><b>15 min</b> 复习自己的高频词 / 搭配，不加新词。</label></li>
+          <li class="task"><input type="checkbox" id="d14t4"><label for="d14t4"><b>10 min</b> Speaking 热身：随便选一个 Part 2 说 2 分钟。</label></li>
+          <li class="task"><input type="checkbox" id="d14t5"><label for="d14t5"><b>10–20 min</b> 浏览考试流程、证件、时间安排；然后停止学习。</label></li>
+        </ul>
+        <div class="miniProgress"><div class="bar"><span></span></div><span class="pct">0%</span></div>
+        <div class="fields">
+          <div class="field"><label class="flabel">最后的阅读状态</label><input type="text" data-key="d14_passage"></div>
+          <div class="field"><label class="flabel">最需要提醒自己的事</label><input type="text" data-key="d14_error"></div>
+          <div class="field"><label class="flabel">考试流程 / 物品确认</label><input type="text" data-key="d14_grammar"></div>
+          <div class="field"><label class="flabel">最后复习的词</label><input type="text" data-key="d14_words"></div>
+          <div class="field full"><label class="flabel">14天总结</label><textarea data-key="d14_notes"></textarea></div>
+        </div>
+      </div>
+    </div>
+    <div class="phaseFooter">提示：如果某天作业很多，优先顺序是：纯阅读/模考 → 分析复盘 → 生词记录 → 掌握当天划出并筛选后的重点生词。最后一项可以牺牲，核心训练不要牺牲。</div>
+  </section>
+</div>
+
+<script>
+const STORAGE_PREFIX = "ielts14_";
+
+function saveInput(el){
+  if(el.type === "checkbox"){
+    localStorage.setItem(STORAGE_PREFIX + el.id, el.checked ? "1":"0");
+  }else{
+    localStorage.setItem(STORAGE_PREFIX + el.dataset.key, el.value);
+  }
+  updateProgress();
+}
+
+function loadAll(){
+  document.querySelectorAll('input[type="checkbox"]').forEach(el=>{
+    el.checked = localStorage.getItem(STORAGE_PREFIX + el.id) === "1";
+    el.addEventListener("change", ()=>saveInput(el));
+  });
+  document.querySelectorAll('[data-key]').forEach(el=>{
+    const v = localStorage.getItem(STORAGE_PREFIX + el.dataset.key);
+    if(v !== null) el.value = v;
+    el.addEventListener("input", ()=>saveInput(el));
+  });
+  updateProgress();
+}
+
+function updateProgress(){
+  let all = [...document.querySelectorAll('input[type="checkbox"]')];
+  let checked = all.filter(x=>x.checked).length;
+  let overall = all.length ? Math.round(checked/all.length*100) : 0;
+  document.getElementById("overallPct").textContent = overall + "%";
+  document.getElementById("overallBar").style.width = overall + "%";
+
+  document.querySelectorAll(".day").forEach(day=>{
+    let boxes = [...day.querySelectorAll('input[type="checkbox"]')];
+    let done = boxes.filter(x=>x.checked).length;
+    let pct = boxes.length ? Math.round(done/boxes.length*100) : 0;
+    day.querySelector(".miniProgress .pct").textContent = pct + "%";
+    day.querySelector(".miniProgress .bar span").style.width = pct + "%";
+    day.classList.toggle("success", pct===100);
+  });
+}
+
+document.querySelectorAll(".tab").forEach(btn=>{
+  btn.addEventListener("click", ()=>{
+    document.querySelectorAll(".tab").forEach(b=>b.classList.remove("active"));
+    document.querySelectorAll(".phase").forEach(p=>p.classList.remove("active"));
+    btn.classList.add("active");
+    document.getElementById(btn.dataset.target).classList.add("active");
+    window.scrollTo({top:0,behavior:"smooth"});
+  });
+});
+
+function resetAll(){
+  if(!confirm("确定要清空所有 14 天的打卡和笔记吗？")) return;
+  Object.keys(localStorage).filter(k=>k.startsWith(STORAGE_PREFIX)).forEach(k=>localStorage.removeItem(k));
+  document.querySelectorAll('input[type="checkbox"]').forEach(el=>el.checked=false);
+  document.querySelectorAll('[data-key]').forEach(el=>el.value="");
+  updateProgress();
+}
+
+loadAll();
+</script>
+</body>
+</html>
